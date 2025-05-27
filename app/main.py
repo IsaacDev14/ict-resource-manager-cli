@@ -32,5 +32,32 @@ def add_device():
         print("❌ Error adding device:", e)
 
 # Call the add_device function directly for now
-if __name__ == "__main__":
-    add_device()
+# if __name__ == "__main__":
+#     add_device()
+
+def view_devices():
+    try:
+        devices = db.query(Device).all #Fetch all device records
+        if not devices:
+            print("No devices found.")
+            return
+        
+        print("\nList of Devices:")
+        print("=" * 40 )
+        for  device in devices:
+            print(f"ID: {device.id} | Name: {device.name} | Type: {device.device_typeb} | serial: {device.serial_number}")
+            print("=" * 40)
+    except SQLAlchemyError as e:
+        print("❌ Error retrieving devices:", e)
+
+    if  __name__ == "__main__":
+        print("1. Add Device")
+        print("2. View Devices")
+        choice = input("choose an option: ")
+
+        if choice == "1"
+            add_device()
+        elif choice == "2":
+            view_devices()
+        else:
+            print("Invalid option")
