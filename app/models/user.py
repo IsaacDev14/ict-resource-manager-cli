@@ -8,8 +8,8 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     user_type = Column(String, nullable=False)
-    Contact_info = Column(String)
+    contact_info = Column(String)
 
 
     # One user can be assigned multiple devices
-    assigmnents = relationship("Assignment", back_populates="user")
+    assignments = relationship("Assignment", back_populates="user")

@@ -17,5 +17,5 @@ class Device(Base):
 
     #Realationships
     location = relationship("Location", back_populates="devices")
-    assigmnents = relationship("Assignment", back_populates="devices")
-    maintenance_logs = relationship("Maintenance", back_populates="devices")
+    assignments = relationship("Assignment", back_populates="devices")
+    maintenance_logs = relationship("MaintenanceLog", back_populates="devices")

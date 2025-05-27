@@ -9,4 +9,4 @@ class Location(Base):
     name = Column(String, nullable=False)
     description = Column(String)
 
-    device = relationship("Device", back_populates="location")
+    devices = relationship("Device", back_populates="location")
