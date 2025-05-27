@@ -3,10 +3,9 @@ from app.database import Base
 from sqlalchemy.orm import relationship
 
 class User(Base):
-    __tablename__ = "User"
+    __tablename__ = "users"
 
-
-    id = Column(Integer, primari_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     user_type = Column(String, nullable=False)
     Contact_info = Column(String)
