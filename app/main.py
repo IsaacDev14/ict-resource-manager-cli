@@ -1,9 +1,22 @@
 from app.database import SessionLocal
 from app.models.device import Device
 from app.models.location import Location
+from app.models.user import User
+from datetime import date
+from app.models.assignment import Assignment
 from sqlalchemy.exc import SQLAlchemyError
 
 db = SessionLocal()  # creates a db session
+
+class Colors:
+    RESET = "\033[0m"
+    RED = "\033[91m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    BLUE = "\033[94m"
+    MAGENTA = "\033[95m"
+    CYAN = "\033[96m"
+    WHITE = "\033[97m"
 
 # function to add a new device
 def add_device():
@@ -80,18 +93,161 @@ def view_locations():
     finally:
         session.close()
 
+def add_user():
+    session = SessionLocal()
+    try:
+        name = input("Enter User Name: ")
+        user_type = input("User Type (staff or department):")
+        contact_info = input("Contact Info (email or phone):")
 
+        new_user = User(name=name, user_type=user_type, contact_info=contact_info)
+        session.add(new_user)
+        session.commit()
+        print("✅ User added successfully.")
 
+    except SQLAlchemyError as e:
+        session.rollback()
+        print("❌ failed to add user:", e)
+    finally:
+        session.close()
+
+def view_users():
+    session = SessionLocal()
+    try:
+        users = session.query(User).all()
+        if not users:
+            print("No users found")
+            return
+        print("\nList Of users: ")
+        print("-" * 70)
+        for user in users:
+            print(f"ID {user.id} | User Name:{user.name} | Type: {user.user_type} | Contact: {user.contact_info}" )
+            print("-" * 70)
+    except SQLAlchemyError as e:
+        print(f"❌ Error Viewing Users: ", e)
+    finally:
+        session.close()
+
+def update_user():
+    session =  SessionLocal()
+    try:
+        user_id = input("Enter User ID to update: ").strip()
+        user = session.query(User).filter_by(id=user_id).first()
+
+        if not user:
+            print("❌ User not found.")
+            return
+        
+        print(f"Current Name: {user.name}")
+        new_name = input("New Name (leave blank to keep current): ").strip()
+        if new_name:
+            user.name = new_name
+
+        print(f"Current Contact Info: {user.contact_info}")
+        new_contact = input("New Contact Info (leave blank to keep current): ").strip()
+        if new_contact:
+            user.contact_infoo = new_contact
+
+        session.commit()
+        print("✅ User updated successfully.")
+    except SQLAlchemyError as e:
+        session.rollback()
+        print("❌ Error updating user:", e)
+    finally:
+        session.close
+
+def delete_user():
+    session = SessionLocal()
+    try:
+        user_id = input("Enter User ID to delete: ").strip()
+        user = session.query(User).filter_by(id=user_id).first()
+
+        if not user:
+            print("❌ User not found.")
+            return
+
+        confirm = input(f"Are you sure you want to delete user '{user.name}'? (y/n): ").strip().lower()
+        if confirm == "y":
+            session.delete(user)
+            session.commit()
+            print("✅ User deleted successfully.")
+        else:
+            print("ℹ️ Deletion cancelled.")
+    except SQLAlchemyError as e:
+        session.rollback()
+        print("❌ Error deleting user:", e)
+    finally:
+        session.close()
+
+def assign_device_to_user():
+    session = SessionLocal()
+    try:
+        device_id = input("Enter Device ID: ").strip()
+        user_id = input("Enter User ID: ").strip()
+
+        # Check if the device is already assigned and not returned
+        existing = session.query(Assignment).filter_by(device_id=device_id, return_date=None).first()
+        if existing:
+            print("❌ Device is already assigned and not yet returned.")
+            return
+
+        new_assignment = Assignment(
+            device_id=int(device_id),
+            user_id=int(user_id),
+            assigned_date=date.today()
+        )
+        session.add(new_assignment)
+
+        # Update device status to "assigned"
+        device = session.query(Device).get(int(device_id))
+        if device:
+            device.status = "assigned"
+        session.commit()
+        print("✅ Device assigned successfully.")
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        print("❌ Error assigning device:", e)
+    finally:
+        session.close()
+
+def view_assignments():
+    session = SessionLocal()
+    try:
+        assignments = session.query(Assignment).all()
+        if not assignments:
+            print("No assignments found.")
+            return
+
+        print("\n📋 List of Assignments:")
+        print("-" * 70)
+        for a in assignments:
+            return_status = a.return_date if a.return_date else "Still Assigned"
+            print(f"Device ID: {a.device_id} | User ID: {a.user_id} | Assigned: {a.assigned_date} | Returned: {return_status}")
+        print("-" * 70)
+    except SQLAlchemyError as e:
+        print("❌ Error retrieving assignments:", e)
+    finally:
+        session.close()
 
 
 
 if __name__ == "__main__":
     while True:
-        print("\n1. Add Device")
-        print("2. View Devices")
-        print("3. Add Location")
-        print("4. View Locations")
-        print("q. Exit")
+        print(f"1. {Colors.CYAN}Add Device{Colors.RESET}")
+        print(f"2. {Colors.MAGENTA}View Devices{Colors.RESET}")
+        print(f"3. {Colors.CYAN}Add Location{Colors.RESET}")
+        print(f"4. {Colors.MAGENTA}View Locations{Colors.RESET}")
+        print(f"5. {Colors.CYAN}Add User{Colors.RESET}")
+        print(f"6. {Colors.MAGENTA}View Users{Colors.RESET}")
+        print(f"7. {Colors.YELLOW}Update User{Colors.RESET}")
+        print(f"8. {Colors.RED}Delete User{Colors.RESET}")
+        print(f"9. {Colors.BLUE}Assign Device to User{Colors.RESET}")
+        print(f"10. {Colors.BLUE}View Assignments{Colors.RESET}")
+
+
+        print("-" * 3)
+        print(f"{Colors.RED}q. Exit{Colors.RESET}")
         choice = input("Choose an option: ")
 
         if choice == "1":
@@ -102,6 +258,20 @@ if __name__ == "__main__":
             add_location()
         elif  choice == "4":
             view_locations() 
+        elif  choice == "5":
+            add_user()
+        elif  choice == "6":
+            view_users()
+        elif choice == "7":
+            update_user()
+        elif choice == "8":
+            delete_user()
+        elif choice == "9":
+            assign_device_to_user()
+        elif choice == "10":
+            view_assignments()
+
+
         elif choice == "q":
             print("👋 Exiting program...")
             break
