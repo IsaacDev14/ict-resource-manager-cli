@@ -52,8 +52,8 @@ def add_location():
     try:
         name = input("Location Name: ")
         description  = input("Location Description: ")
-        location = location(name=name, description=description)
-        session.add(location)
+        new_location = Location(name=name, description=description)
+        session.add(new_location)
         session.commit()
         print("✅ Location added successfully.")
     except Exception as e:
@@ -70,10 +70,11 @@ def view_locations():
         if not locations:
             print("No locations found.")
             return
-
         print("\nList of Locations:")
+        print("-" * 70)
         for loc in locations:
             print(f"ID: {loc.id} | Name: {loc.name} | Description: {loc.description}")
+            print("-" * 70)
     except Exception as e:
         print(f"❌ Error viewing locations: {e}")
     finally:
@@ -83,11 +84,14 @@ def view_locations():
 
 
 
+
 if __name__ == "__main__":
     while True:
         print("\n1. Add Device")
         print("2. View Devices")
-        print("3. Exit")
+        print("3. Add Location")
+        print("4. View Locations")
+        print("q. Exit")
         choice = input("Choose an option: ")
 
         if choice == "1":
