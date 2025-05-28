@@ -220,15 +220,20 @@ def view_assignments():
             return
 
         print("\n📋 List of Assignments:")
-        print("-" * 70)
+        print("-" * 100)
         for a in assignments:
+            user_name = a.user.name if a.user else "Unknown User"
+            device_name = a.device.name if a.device else "Unknown Device"
             return_status = a.return_date if a.return_date else "Still Assigned"
-            print(f"Device ID: {a.device_id} | User ID: {a.user_id} | Assigned: {a.assigned_date} | Returned: {return_status}")
-        print("-" * 70)
+
+            print(f"Device: {device_name} (ID: {a.device_id}) | User: {user_name} (ID: {a.user_id}) | Assigned: {a.assigned_date} | Returned: {return_status}")
+        print("-" * 100)
     except SQLAlchemyError as e:
         print("❌ Error retrieving assignments:", e)
     finally:
         session.close()
+
+
 
 
 
@@ -243,7 +248,7 @@ if __name__ == "__main__":
         print(f"7. {Colors.YELLOW}Update User{Colors.RESET}")
         print(f"8. {Colors.RED}Delete User{Colors.RESET}")
         print(f"9. {Colors.BLUE}Assign Device to User{Colors.RESET}")
-        print(f"10. {Colors.BLUE}View Assignments{Colors.RESET}")
+        print(f"10. {Colors.GREEN}View Assignments{Colors.RESET}")
 
 
         print("-" * 3)
