@@ -1,3 +1,5 @@
+# app/models/assignment.py
+
 from sqlalchemy import Column, Integer, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -11,6 +13,6 @@ class Assignment(Base):
     assigned_date = Column(Date)
     return_date = Column(Date)
 
-    # Relationships to Device and User
+    # Relationships
     device = relationship("Device", back_populates="assignments")
     user = relationship("User", back_populates="assignments")

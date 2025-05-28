@@ -1,26 +1,27 @@
 from app.database import SessionLocal
 from app.models.device import Device
+from app.models.location import Location
 from sqlalchemy.exc import SQLAlchemyError
 
-db = SessionLocal() #creates a db session
+db = SessionLocal()  # creates a db session
 
-#function to add a new device
+# function to add a new device
 def add_device():
-    #getting ddevice infor from user
+    # getting device info from user
     name = input("Device Name: ")
-    device_type = input("Device Type (e.g, Laptop, Router): ")
+    device_type = input("Device Type (e.g., Laptop, Router): ")
     serial_number = input("Serial Number: ")
-    status =   input("Status  (available, assigned, damaged): ")
+    status = input("Status (available, assigned, damaged): ")
     location_id = input("Location ID (integer): ")
 
-    #create a new Device object using the provided data
+    # create a new Device object using the provided data
     new_device = Device(
-        name = name,
-        device_type = device_type,
-        serial_number = serial_number,
-        status = status,
-        location_id = int(location_id) if location_id  else None
-    ) 
+        name=name,
+        device_type=device_type,
+        serial_number=serial_number,
+        status=status,
+        location_id=int(location_id) if location_id else None
+    )
 
     # Try to save the device to the database
     try:
@@ -31,33 +32,74 @@ def add_device():
         db.rollback()
         print("❌ Error adding device:", e)
 
-# Call the add_device function directly for now
-# if __name__ == "__main__":
-#     add_device()
-
 def view_devices():
     try:
-        devices = db.query(Device).all #Fetch all device records
+        devices = db.query(Device).all()  # Fetch all device records
         if not devices:
             print("No devices found.")
             return
-        
+
         print("\nList of Devices:")
-        print("=" * 40 )
-        for  device in devices:
-            print(f"ID: {device.id} | Name: {device.name} | Type: {device.device_typeb} | serial: {device.serial_number}")
-            print("=" * 40)
+        print("-" * 70)
+        for device in devices:
+            print(f"ID: {device.id} | Name: {device.name} | Type: {device.device_type} | Serial: {device.serial_number}")
+            print("-" * 70)
     except SQLAlchemyError as e:
         print("❌ Error retrieving devices:", e)
 
-    if  __name__ == "__main__":
-        print("1. Add Device")
-        print("2. View Devices")
-        choice = input("choose an option: ")
+def add_location():
+    session = SessionLocal()
+    try:
+        name = input("Location Name: ")
+        description  = input("Location Description: ")
+        location = location(name=name, description=description)
+        session.add(location)
+        session.commit()
+        print("✅ Location added successfully.")
+    except Exception as e:
+        session.rollback()
+        print(f"❌ Error adding location: {e}")
+    finally:
+        session.close()
 
-        if choice == "1"
+
+def view_locations():
+    session = SessionLocal()
+    try:
+        locations = session.query(Location).all()
+        if not locations:
+            print("No locations found.")
+            return
+
+        print("\nList of Locations:")
+        for loc in locations:
+            print(f"ID: {loc.id} | Name: {loc.name} | Description: {loc.description}")
+    except Exception as e:
+        print(f"❌ Error viewing locations: {e}")
+    finally:
+        session.close()
+
+
+
+
+
+if __name__ == "__main__":
+    while True:
+        print("\n1. Add Device")
+        print("2. View Devices")
+        print("3. Exit")
+        choice = input("Choose an option: ")
+
+        if choice == "1":
             add_device()
         elif choice == "2":
             view_devices()
+        elif  choice == "3":
+            add_location()
+        elif  choice == "4":
+            view_locations() 
+        elif choice == "q":
+            print("👋 Exiting program...")
+            break
         else:
-            print("Invalid option")
+            print("Invalid option, please try again.")

@@ -1,9 +1,9 @@
-# Import required SQLAlchemy components
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey
-from app.database import Base
-from sqlalchemy.orm import relationship
+# app/models/device.py
 
-# Define the Device model, representing an ICT equipment item (e.g., laptop, router)
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey
+from sqlalchemy.orm import relationship
+from app.database import Base
+
 class Device(Base):
     __tablename__ = "devices"
 
@@ -11,11 +11,10 @@ class Device(Base):
     name = Column(String, nullable=False)
     device_type = Column(String, nullable=False)
     serial_number = Column(String, unique=True, nullable=False)
-    status = Column(Enum("available", "assigned", "damaged", name="status_enum"), default="available") # Current status of the device. Enum restricts values to valid choices.
+    status = Column(Enum("available", "assigned", "damaged", name="status_enum"), default="available")
     location_id = Column(Integer, ForeignKey("locations.id"))
 
-
-    #Realationships
+    # Relationships
     location = relationship("Location", back_populates="devices")
-    assignments = relationship("Assignment", back_populates="devices")
-    maintenance_logs = relationship("MaintenanceLog", back_populates="devices")
+    assignments = relationship("Assignment", back_populates="device")  # fixed here
+    maintenance_logs = relationship("MaintenanceLog", back_populates="device")
