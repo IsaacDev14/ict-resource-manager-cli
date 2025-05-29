@@ -1,5 +1,5 @@
 # ICT Resource Manager CLI
-![alt text](image.png)
+![alt text](assets/home.png)
 
 A command-line interface (CLI) application for managing ICT resources such as devices, locations, users, assignments, and maintenance logs within an institution.
 
@@ -82,7 +82,7 @@ alembic upgrade head
 ```
 
 ## Screenshots (Optional)
-![alt text](image.png)
+![alt text](assets/home.png)
 _sample CLI interactions screenshots._
 
 ## Contributing
