@@ -3,6 +3,7 @@ from app.models.device import Device
 from app.models.location import Location
 from app.models.user import User
 from datetime import date
+from app.models.maintenance_log import MaintenanceLog
 from app.models.assignment import Assignment
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -235,6 +236,55 @@ def view_assignments():
         session.close()
 
 
+def add_maintenance_log():
+    session = SessionLocal()
+    try:
+        device_id = input("Enter Device ID for maintenance: ").strip()
+        issue_description = input("Describe the issue: ").strip()
+        repair_action = input("Repair action taken (optional): ").strip()
+        log_date = input("Date (YYYY-MM-DD) or leave blank for today: ").strip()
+
+        log_date = date.fromisocalendar(log_date) if log_date else date.today()
+
+        new_log = MaintenanceLog(
+            device_id = int(device_id),
+            issue_description = issue_description,
+            repair_action = repair_action if repair_action else None,
+            date = log_date
+        )
+
+        session.add(new_log)
+        session.commit()
+        print(f"{Colors.GREEN}✅ Maintenance log added successfully.{Colors.RESET}")
+    except Exception as e:
+        session.rollback()
+        print(f"{Colors.RED}❌ Error adding maintenance log: {e}{Colors.RESET}")
+    finally:
+        session.close()
+
+
+def view_maintenance_logs():
+    session = SessionLocal()
+    try:
+        logs = session.query(MaintenanceLog).all()
+        if not logs:
+            print("No maintenance logs found.")
+            return
+        
+        print("\n🛠️ Maintenance Logs:")
+        print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
+        for log in logs:
+            device_name = log.device.name if log.device else "unkown device"
+            print(f"Device: {device_name} (ID: {log.device_id})")
+            print(f"Issue: {log.issue_description}")
+            print(f"Repair: {log.repair_action or 'N/A'}")
+            print(f"Date: {log.date}")
+            print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error retrieving maintenance logs: {e}{Colors.RESET}")
+    finally:
+        session.close()
+
 
 
 
@@ -250,6 +300,9 @@ if __name__ == "__main__":
         print(f"8. {Colors.RED}Delete User{Colors.RESET}")
         print(f"9. {Colors.BLUE}Assign Device to User{Colors.RESET}")
         print(f"10. {Colors.GREEN}View Assignments{Colors.RESET}")
+        print(f"11. {Colors.YELLOW}Add Maintenance Log{Colors.RESET}")
+        print(f"12. {Colors.MAGENTA}View Maintenance Logs{Colors.RESET}")
+
 
 
         print("-" * 3)
@@ -276,6 +329,11 @@ if __name__ == "__main__":
             assign_device_to_user()
         elif choice == "10":
             view_assignments()
+        elif choice == "11":
+            add_maintenance_log()
+        elif choice == "12":
+            view_maintenance_logs()
+
 
 
         elif choice == "q":
