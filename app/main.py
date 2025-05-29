@@ -40,7 +40,7 @@ def add_device():
     try:
         db.add(new_device)
         db.commit()
-        print("✅ Device added successfully.")
+        print(f"{Colors.GREEN}✅ Device added successfully.{Colors.RESET}")
     except SQLAlchemyError as e:
         db.rollback()
         print("❌ Error adding device:", e)
@@ -53,10 +53,10 @@ def view_devices():
             return
 
         print("\nList of Devices:")
-        print("-" * 70)
+        print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
         for device in devices:
             print(f"ID: {device.id} | Name: {device.name} | Type: {device.device_type} | Serial: {device.serial_number}")
-            print("-" * 70)
+            print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
     except SQLAlchemyError as e:
         print("❌ Error retrieving devices:", e)
 
@@ -68,7 +68,7 @@ def add_location():
         new_location = Location(name=name, description=description)
         session.add(new_location)
         session.commit()
-        print("✅ Location added successfully.")
+        print(f"{Colors.GREEN}✅ Location added successfully.{Colors.RESET}")
     except Exception as e:
         session.rollback()
         print(f"❌ Error adding location: {e}")
@@ -84,10 +84,10 @@ def view_locations():
             print("No locations found.")
             return
         print("\nList of Locations:")
-        print("-" * 70)
+        print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
         for loc in locations:
             print(f"ID: {loc.id} | Name: {loc.name} | Description: {loc.description}")
-            print("-" * 70)
+            print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
     except Exception as e:
         print(f"❌ Error viewing locations: {e}")
     finally:
@@ -103,7 +103,7 @@ def add_user():
         new_user = User(name=name, user_type=user_type, contact_info=contact_info)
         session.add(new_user)
         session.commit()
-        print("✅ User added successfully.")
+        print(f"{Colors.GREEN}✅ User added successfully.{Colors.RESET}")
 
     except SQLAlchemyError as e:
         session.rollback()
@@ -119,10 +119,10 @@ def view_users():
             print("No users found")
             return
         print("\nList Of users: ")
-        print("-" * 70)
+        print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
         for user in users:
             print(f"ID {user.id} | User Name:{user.name} | Type: {user.user_type} | Contact: {user.contact_info}" )
-            print("-" * 70)
+            print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
     except SQLAlchemyError as e:
         print(f"❌ Error Viewing Users: ", e)
     finally:
@@ -146,15 +146,15 @@ def update_user():
         print(f"Current Contact Info: {user.contact_info}")
         new_contact = input("New Contact Info (leave blank to keep current): ").strip()
         if new_contact:
-            user.contact_infoo = new_contact
+            user.contact_info = new_contact
 
         session.commit()
-        print("✅ User updated successfully.")
+        print(F"{Colors.GREEN}✅ User updated successfully.{Colors.RESET}")
     except SQLAlchemyError as e:
         session.rollback()
         print("❌ Error updating user:", e)
     finally:
-        session.close
+        session.close()
 
 def delete_user():
     session = SessionLocal()
@@ -170,7 +170,7 @@ def delete_user():
         if confirm == "y":
             session.delete(user)
             session.commit()
-            print("✅ User deleted successfully.")
+            print(f"{Colors.GREEN}✅ User deleted successfully.{Colors.RESET}")
         else:
             print("ℹ️ Deletion cancelled.")
     except SQLAlchemyError as e:
@@ -203,7 +203,7 @@ def assign_device_to_user():
         if device:
             device.status = "assigned"
         session.commit()
-        print("✅ Device assigned successfully.")
+        print(f"{Colors.GREEN}✅ Device assigned successfully.{Colors.RESET}")
 
     except SQLAlchemyError as e:
         session.rollback()
@@ -219,15 +219,16 @@ def view_assignments():
             print("No assignments found.")
             return
 
+        
         print("\n📋 List of Assignments:")
-        print("-" * 100)
+        print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
         for a in assignments:
             user_name = a.user.name if a.user else "Unknown User"
             device_name = a.device.name if a.device else "Unknown Device"
             return_status = a.return_date if a.return_date else "Still Assigned"
-
+            print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
             print(f"Device: {device_name} (ID: {a.device_id}) | User: {user_name} (ID: {a.user_id}) | Assigned: {a.assigned_date} | Returned: {return_status}")
-        print("-" * 100)
+        print(f"{Colors.GREEN}-{Colors.RESET}" * 100)
     except SQLAlchemyError as e:
         print("❌ Error retrieving assignments:", e)
     finally:

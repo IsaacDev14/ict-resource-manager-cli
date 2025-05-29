@@ -5,7 +5,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 DATABASE_URL = "sqlite:///./ict_resources.db"
 
 # SQLAlchemy engine
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=False)
 
 # Base class for models
 Base = declarative_base()
